@@ -164,12 +164,12 @@ func _fixed_process(delta):
 	else:
 		cytrill.set_led(player_number, 1, 0, 0, 0, 0)
 		
-	if Input.get_joy_axis(player_number, 1) > joy_tresh:
+	if touch.get_joy_axis(player_number, 1) > joy_tresh:
 		walking = true
 		if mv.y < move_max:
 			mv.y += move_accel*delta
 			mov_y = 1
-	elif Input.get_joy_axis(player_number,  1) < -joy_tresh:
+	elif touch.get_joy_axis(player_number,  1) < -joy_tresh:
 		walking = true
 		if mv.y > -move_max:
 			mv.y -= move_accel*delta
@@ -182,12 +182,12 @@ func _fixed_process(delta):
 			yv = 0
 		mv.y = sign(mv.y)*yv
 	
-	if Input.get_joy_axis(player_number, 0) > joy_tresh:
+	if touch.get_joy_axis(player_number, 0) > joy_tresh:
 		walking = true
 		if mv.x < move_max:
 			mv.x += move_accel*delta
 			mov_x = 1
-	elif Input.get_joy_axis(player_number,  0) < -joy_tresh:
+	elif touch.get_joy_axis(player_number,  0) < -joy_tresh:
 		walking = true
 		if mv.x > -move_max:
 			mv.x -= move_accel*delta

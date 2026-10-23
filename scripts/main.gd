@@ -155,21 +155,28 @@ func gs_waitforplayers(delta):
 	
 	for i in range(0,1024):
 			if Input.is_joy_button_pressed(i, 0):
-				if (!get_node("Players").has_node(cytrill.get_name(i))):
-					print("Button has been presed!")
-					
-					print(cytrill.get_name(i) + " has joined the game!")
-					var player = pl_player.instance()
-					player.set_name(cytrill.get_name(i))
-					player.player_number = i
-					last_team_assigend+=1
-					if (last_team_assigend > 3):
-						last_team_assigend = 0
-					player.team = last_team_assigend
-					get_node("Players").add_child(player)
-					player.init_player()
-					cytrill.set_led(i, 0, colarray[player.team ].r*255, colarray[player.team ].g*255, colarray[player.team ].b*255, 1)
-					cytrill.set_led(i, 1, 0, 0, 0, 0)
+				join_player(i)
+
+	for pad in range(touch.PAD_COUNT):
+		if touch.is_pad_pressed(pad):
+			join_player(touch.FIRST_PAD + pad)
+
+func join_player(i):
+	if (!get_node("Players").has_node(cytrill.get_name(i))):
+		print("Button has been presed!")
+
+		print(cytrill.get_name(i) + " has joined the game!")
+		var player = pl_player.instance()
+		player.set_name(cytrill.get_name(i))
+		player.player_number = i
+		last_team_assigend+=1
+		if (last_team_assigend > 3):
+			last_team_assigend = 0
+		player.team = last_team_assigend
+		get_node("Players").add_child(player)
+		player.init_player()
+		cytrill.set_led(i, 0, colarray[player.team ].r*255, colarray[player.team ].g*255, colarray[player.team ].b*255, 1)
+		cytrill.set_led(i, 1, 0, 0, 0, 0)
 	
 		
 func gs_running(delta):

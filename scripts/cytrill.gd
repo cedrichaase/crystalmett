@@ -1,6 +1,10 @@
 extends Node
 
 func get_ip(js):
+	# touch pads (see touch.gd) have no LEDs
+	if js >= 1000:
+		return null
+
 	var splitted_name = Input.get_joy_name(js).split(":")
 
 	if splitted_name.size() == 2:
@@ -32,6 +36,9 @@ func set_led(js, led, red, green, blue, brightness):
 		udp.close()
 
 func get_name(js):
+	if js >= 1000:
+		return "Touch " + str(js - 1000 + 1)
+
 	var splitted_name = Input.get_joy_name(js).split(":")
 
 	if splitted_name.size() == 2:
