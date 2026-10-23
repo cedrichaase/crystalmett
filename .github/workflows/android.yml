@@ -47,6 +47,11 @@ jobs:
           PLATFORM=$("$SDKMANAGER" --list 2>/dev/null | grep -oE "platforms;android-${ANDROID_API}(\.[0-9]+)?\b" | sort -uV | head -n1)
           echo "Installing $PLATFORM"
           "$SDKMANAGER" "$PLATFORM"
+          # The Android Gradle plugin looks for platforms/android-37
+          DIR="$ANDROID_HOME/platforms/${PLATFORM#platforms;}"
+          LINK="$ANDROID_HOME/platforms/android-${ANDROID_API}"
+          if [ ! -e "$LINK" ]; then ln -s "$DIR" "$LINK" || sudo ln -s "$DIR" "$LINK"; fi
+          ls -la "$ANDROID_HOME/platforms"
 
       - name: Import project
         run: timeout 600 "$GODOT" --headless --import 2>&1 | tee import.log
@@ -87,6 +92,7 @@ jobs:
           grep -nE "compileSdk|targetSdk|minSdk|buildTools" android/build/config.gradle || true
           sed -i -E "s/(compileSdk *: *)[0-9]+/\1${ANDROID_API}/" android/build/config.gradle
           grep -nE "compileSdk" android/build/config.gradle
+          echo "android.suppressUnsupportedCompileSdk=${ANDROID_API}" >> android/build/gradle.properties
 
       - name: Prepare signing key
         env:
