@@ -42,8 +42,11 @@ jobs:
         run: |
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKMANAGER" --licenses > /dev/null || true
-          "$SDKMANAGER" --list 2>/dev/null | grep -E "platforms;android-3[5-9]|build-tools;3[5-9]" | sort -u | head -n 20
-          "$SDKMANAGER" "platforms;android-${ANDROID_API}"
+          "$SDKMANAGER" --list 2>/dev/null | grep -E "platforms;android-3[6-9]" | sort -u
+          # Newer platforms are named e.g. "android-37.0" instead of "android-37"
+          PLATFORM=$("$SDKMANAGER" --list 2>/dev/null | grep -oE "platforms;android-${ANDROID_API}(\.[0-9]+)?\b" | sort -uV | head -n1)
+          echo "Installing $PLATFORM"
+          "$SDKMANAGER" "$PLATFORM"
 
       - name: Configure Godot editor settings
         run: |
