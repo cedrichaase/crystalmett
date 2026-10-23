@@ -38,27 +38,6 @@ jobs:
           mv "$RUNNER_TEMP"/tpl/templates/* "$TPL/"
           ls "$TPL"
 
-      - name: Install Android SDK platform ${{ env.ANDROID_API }}
-        run: |
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          yes | "$SDKMANAGER" --licenses > /dev/null || true
-          "$SDKMANAGER" --list 2>/dev/null | grep -E "platforms;android-3[6-9]" | sort -u
-          # Newer platforms are named e.g. "android-37.0" instead of "android-37"
-          PLATFORM=$("$SDKMANAGER" --list 2>/dev/null | grep -oE "platforms;android-${ANDROID_API}(\.[0-9]+)?\b" | sort -uV | head -n1)
-          echo "Installing $PLATFORM"
-          "$SDKMANAGER" "$PLATFORM"
-          # The Android Gradle plugin in Godot's build template predates the
-          # versioned platform names and looks for platforms;android-37, so
-          # register a copy under that name.
-          DIR="$ANDROID_HOME/platforms/${PLATFORM#platforms;}"
-          COPY="$ANDROID_HOME/platforms/android-${ANDROID_API}"
-          if [ "$DIR" != "$COPY" ] && [ ! -e "$COPY" ]; then
-            cp -r "$DIR" "$COPY"
-            sed -i "s|path=\"${PLATFORM}\"|path=\"platforms;android-${ANDROID_API}\"|" "$COPY/package.xml"
-            grep -o 'path="[^"]*"' "$COPY/package.xml"
-          fi
-          ls -la "$ANDROID_HOME/platforms"
-
       - name: Import project
         run: timeout 600 "$GODOT" --headless --import 2>&1 | tee import.log
 
@@ -94,11 +73,10 @@ jobs:
           echo -n "${GODOT_VERSION}.stable" > android/.build_version
           touch android/build/.gdignore
           ls android/build
-          # Godot's template may compile against an older SDK than the target.
-          grep -nE "compileSdk|targetSdk|minSdk|buildTools" android/build/config.gradle || true
-          sed -i -E "s/(compileSdk *: *)[0-9]+/\1${ANDROID_API}/" android/build/config.gradle
-          grep -nE "compileSdk" android/build/config.gradle
-          echo "android.suppressUnsupportedCompileSdk=${ANDROID_API}" >> android/build/gradle.properties
+          # targetSdk comes from the export preset (gradle_build/target_sdk). The
+          # template's Android Gradle plugin cannot compile against API 37 yet, so
+          # compileSdk stays at the template default.
+          grep -nE "compileSdk|targetSdk|minSdk" android/build/config.gradle || true
 
       - name: Prepare signing key
         env:
