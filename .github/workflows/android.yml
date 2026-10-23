@@ -47,6 +47,25 @@ jobs:
           ls -la out
           test -s out/crystalmett-unsigned.apk
 
+      - name: Raise targetSdkVersion to 23
+        # Android 14+ refuses to install apps targeting SDK < 23; the
+        # Godot 1.1 template targets SDK 10.
+        run: |
+          curl -fsSL -o apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar
+          java -jar apktool.jar d -s -f -o apk-src out/crystalmett-unsigned.apk
+          python3 - <<'PY'
+          import re
+          p = "apk-src/apktool.yml"
+          s = open(p).read()
+          if "targetSdkVersion" in s:
+              s = re.sub(r"targetSdkVersion: .*", "targetSdkVersion: '23'", s)
+          else:
+              s = re.sub(r"(\n(\s*)minSdkVersion: .*)", r"\1\n\2targetSdkVersion: '23'", s)
+          open(p, "w").write(s)
+          print(s)
+          PY
+          java -jar apktool.jar b -o out/crystalmett-unsigned.apk apk-src
+
       - name: Align and sign APK
         run: |
           BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n1)
@@ -57,7 +76,7 @@ jobs:
           "$BT/apksigner" sign --ks release.keystore --ks-pass pass:android --ks-key-alias crystalmett \
             --out out/crystalmett.apk out/crystalmett-aligned.apk
           "$BT/apksigner" verify --verbose out/crystalmett.apk
-          "$BT/aapt" dump badging out/crystalmett.apk | grep -E "package|sdkVersion|native-code|application-label" || true
+          "$BT/aapt" dump badging out/crystalmett.apk | grep -iE "^package|sdkVersion|native-code|application-label:" || true
 
       - uses: actions/upload-artifact@v4
         with:
