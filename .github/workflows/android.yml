@@ -48,17 +48,20 @@ jobs:
           echo "Installing $PLATFORM"
           "$SDKMANAGER" "$PLATFORM"
 
+      - name: Import project
+        run: timeout 600 "$GODOT" --headless --import 2>&1 | tee import.log
+
       - name: Configure Godot editor settings
         run: |
-          "$GODOT" --headless --quit || true
-          for f in ~/.config/godot/editor_settings-*.tres; do
+          ls -la ~/.config/godot
+          shopt -s nullglob
+          files=(~/.config/godot/editor_settings-*.tres)
+          test ${#files[@]} -gt 0
+          for f in "${files[@]}"; do
             echo "export/android/android_sdk_path = \"$ANDROID_HOME\"" >> "$f"
             echo "export/android/java_sdk_path = \"$JAVA_HOME\"" >> "$f"
             echo "configured $f"
           done
-
-      - name: Import project
-        run: timeout 600 "$GODOT" --headless --import 2>&1 | tee import.log
 
       - name: Smoke test (run the game with 4 simulated touch players)
         run: |
