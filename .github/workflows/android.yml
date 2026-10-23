@@ -32,8 +32,11 @@ jobs:
           chmod +x "$GODOT_BIN"
           echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
           # Godot 1.1 looks for templates in ~/.godot/templates
-          mkdir -p ~/.godot
-          unzip -q templates.tpz -d ~/.godot
+          unzip -q templates.tpz -d tpl
+          find tpl -maxdepth 3 | head -n 50
+          TPL_DIR=$(dirname "$(find "$PWD/tpl" -name android_release.apk | head -n1)")
+          mkdir -p ~/.godot/templates
+          cp -r "$TPL_DIR"/. ~/.godot/templates/
           ls -la ~/.godot/templates
 
       - name: Export unsigned APK
