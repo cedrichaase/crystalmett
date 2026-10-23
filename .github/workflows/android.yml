@@ -1,0 +1,61 @@
+name: Android APK
+
+on:
+  push:
+    branches: [master, "claude/**"]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    env:
+      GODOT_URL: https://github.com/godotengine/godot-builds/releases/download/1.1-stable
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: project
+
+      - name: Install runtime dependencies for Godot 1.1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1 libglu1-mesa libgl1-mesa-dri \
+            libxcursor1 libxinerama1 libxrandr2 libxi6 libpulse0
+          sudo apt-get install -y libasound2t64 || sudo apt-get install -y libasound2
+
+      - name: Download Godot 1.1 and export templates
+        run: |
+          curl -fsSL -o godot.zip "$GODOT_URL/Godot_v1.1_stable_x11.64.zip"
+          curl -fsSL -o templates.tpz "$GODOT_URL/Godot_v1.1_stable_export_templates.tpz"
+          unzip -q godot.zip -d godot
+          GODOT_BIN=$(find "$PWD/godot" -type f -name 'godot*' | head -n1)
+          chmod +x "$GODOT_BIN"
+          echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
+          # Godot 1.1 looks for templates in ~/.godot/templates
+          mkdir -p ~/.godot
+          unzip -q templates.tpz -d ~/.godot
+          ls -la ~/.godot/templates
+
+      - name: Export unsigned APK
+        run: |
+          mkdir -p out
+          timeout 300 xvfb-run -a -s "-screen 0 1280x720x24" \
+            "$GODOT_BIN" -path "$PWD/project" -export "Android" "$PWD/out/crystalmett-unsigned.apk" || true
+          ls -la out
+          test -s out/crystalmett-unsigned.apk
+
+      - name: Align and sign APK
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n1)
+          keytool -genkeypair -noprompt -keystore release.keystore -storepass android -keypass android \
+            -alias crystalmett -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=CrystalMett, O=CrystalMett, C=DE"
+          "$BT/zipalign" -f -p 4 out/crystalmett-unsigned.apk out/crystalmett-aligned.apk
+          "$BT/apksigner" sign --ks release.keystore --ks-pass pass:android --ks-key-alias crystalmett \
+            --out out/crystalmett.apk out/crystalmett-aligned.apk
+          "$BT/apksigner" verify --verbose out/crystalmett.apk
+          "$BT/aapt" dump badging out/crystalmett.apk | grep -E "package|sdkVersion|native-code|application-label" || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crystalmett-apk
+          path: out/crystalmett.apk
