@@ -76,7 +76,12 @@ jobs:
 
       - name: Install Android build template
         run: |
-          "$GODOT" --headless --install-android-build-template --quit 2>&1 | tail -n 5
+          # Same as "Project > Install Android Build Template" in the editor
+          TPL="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p android/build
+          unzip -q "$TPL/android_source.zip" -d android/build
+          echo -n "${GODOT_VERSION}.stable" > android/.build_version
+          touch android/build/.gdignore
           ls android/build
           # Godot's template may compile against an older SDK than the target.
           grep -nE "compileSdk|targetSdk|minSdk|buildTools" android/build/config.gradle || true
