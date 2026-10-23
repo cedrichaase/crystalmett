@@ -47,10 +47,16 @@ jobs:
           PLATFORM=$("$SDKMANAGER" --list 2>/dev/null | grep -oE "platforms;android-${ANDROID_API}(\.[0-9]+)?\b" | sort -uV | head -n1)
           echo "Installing $PLATFORM"
           "$SDKMANAGER" "$PLATFORM"
-          # The Android Gradle plugin looks for platforms/android-37
+          # The Android Gradle plugin in Godot's build template predates the
+          # versioned platform names and looks for platforms;android-37, so
+          # register a copy under that name.
           DIR="$ANDROID_HOME/platforms/${PLATFORM#platforms;}"
-          LINK="$ANDROID_HOME/platforms/android-${ANDROID_API}"
-          if [ ! -e "$LINK" ]; then ln -s "$DIR" "$LINK" || sudo ln -s "$DIR" "$LINK"; fi
+          COPY="$ANDROID_HOME/platforms/android-${ANDROID_API}"
+          if [ "$DIR" != "$COPY" ] && [ ! -e "$COPY" ]; then
+            cp -r "$DIR" "$COPY"
+            sed -i "s|path=\"${PLATFORM}\"|path=\"platforms;android-${ANDROID_API}\"|" "$COPY/package.xml"
+            grep -o 'path="[^"]*"' "$COPY/package.xml"
+          fi
           ls -la "$ANDROID_HOME/platforms"
 
       - name: Import project
