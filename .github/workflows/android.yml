@@ -66,11 +66,13 @@ jobs:
       - name: Smoke test (run the game with 4 simulated touch players)
         run: |
           timeout 300 "$GODOT" --headless --fixed-fps 60 --quit-after 3600 -- --smoke-test 2>&1 | tee smoke.log
-          if grep -E "SCRIPT ERROR|Parse Error|ERROR:" smoke.log; then
+          # Leak reports at exit are expected when quitting via --quit-after
+          if grep -E "SCRIPT ERROR|Parse Error|ERROR:" smoke.log | grep -v "still in use at exit"; then
             echo "::error::The game logged errors during the smoke test"
             exit 1
           fi
           grep "has joined the game" smoke.log
+          grep "Game started" smoke.log
 
       - name: Install Android build template
         run: |

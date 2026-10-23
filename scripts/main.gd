@@ -117,6 +117,7 @@ func gs_waitforplayers(delta):
 	if (time_remaining <= 0):
 		time_elapsed = 0 #Reset Timer
 		next_game_state = GS_RUNNING
+		print("Game started with %d players" % $Players.get_child_count())
 		$GUI/Menu_Join_Game/Countdown.hide()
 	elif (countdown_started):
 		var m = int(time_remaining / 60)
