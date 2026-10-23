@@ -27,7 +27,8 @@ jobs:
           curl -fsSL -o godot.zip "$GODOT_URL/Godot_v1.1_stable_x11.64.zip"
           curl -fsSL -o templates.tpz "$GODOT_URL/Godot_v1.1_stable_export_templates.tpz"
           unzip -q godot.zip -d godot
-          GODOT_BIN=$(find "$PWD/godot" -type f -name 'godot*' | head -n1)
+          ls -laR godot
+          GODOT_BIN=$(find "$PWD/godot" -type f -iname 'godot*' | head -n1)
           chmod +x "$GODOT_BIN"
           echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
           # Godot 1.1 looks for templates in ~/.godot/templates
