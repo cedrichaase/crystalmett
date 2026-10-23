@@ -5,80 +5,111 @@ on:
     branches: [master, "claude/**"]
   workflow_dispatch:
 
+env:
+  GODOT_VERSION: 4.7.2
+  GODOT_URL: https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable
+  ANDROID_API: 37
+
 jobs:
   apk:
     runs-on: ubuntu-latest
-    env:
-      GODOT_URL: https://github.com/godotengine/godot-builds/releases/download/1.1-stable
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
         with:
-          path: project
+          distribution: temurin
+          java-version: 17
 
-      - name: Download Godot 1.1 and export templates
+      - name: Download Godot and export templates
         run: |
-          curl -fsSL -o godot.zip "$GODOT_URL/Godot_v1.1_stable_x11.64.zip"
-          curl -fsSL -o templates.tpz "$GODOT_URL/Godot_v1.1_stable_export_templates.tpz"
-          unzip -q godot.zip -d godot
-          ls -laR godot
-          GODOT_BIN=$(find "$PWD/godot" -type f -iname 'godot*' | head -n1)
-          chmod +x "$GODOT_BIN"
-          echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
-          # Godot 1.1 looks for templates in ~/.godot/templates
-          unzip -q templates.tpz -d tpl
-          find tpl -maxdepth 3 | head -n 50
-          TPL_DIR=$(dirname "$(find "$PWD/tpl" -name android_release.apk | head -n1)")
-          mkdir -p ~/.godot/templates
-          cp -r "$TPL_DIR"/. ~/.godot/templates/
-          ls -la ~/.godot/templates
+          curl -fsSL -o godot.zip "$GODOT_URL/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          curl -fsSL -o templates.tpz "$GODOT_URL/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          mkdir -p "$RUNNER_TEMP/godot"
+          unzip -q godot.zip -d "$RUNNER_TEMP/godot"
+          rm godot.zip
+          GODOT="$RUNNER_TEMP/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+          chmod +x "$GODOT"
+          echo "GODOT=$GODOT" >> "$GITHUB_ENV"
+          TPL="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "$TPL"
+          unzip -q templates.tpz -d "$RUNNER_TEMP/tpl"
+          rm templates.tpz
+          mv "$RUNNER_TEMP"/tpl/templates/* "$TPL/"
+          ls "$TPL"
 
-      - name: Export unsigned APK
+      - name: Install Android SDK platform ${{ env.ANDROID_API }}
         run: |
-          mkdir -p out
-          # Godot 1.1 needs libssl 1.0.0, so export inside an old Ubuntu.
-          docker run --rm -e GODOT_BIN -v "$PWD:/work" -v "$HOME/.godot:/root/.godot" -w /work ubuntu:16.04 bash -c '
-            apt-get update -qq &&
-            apt-get install -y -qq xvfb xauth libssl1.0.0 libgl1-mesa-glx libgl1-mesa-dri libglu1-mesa \
-              libxcursor1 libxinerama1 libxrandr2 libxi6 libasound2 libpulse0 libfreetype6 > /dev/null &&
-            timeout 300 xvfb-run -a -s "-screen 0 1280x720x24" \
-              "/work/godot/$(basename "$GODOT_BIN")" -path /work/project -export "Android" /work/out/crystalmett-unsigned.apk
-            echo "godot exit code: $?"
-          '
-          ls -la out
-          test -s out/crystalmett-unsigned.apk
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --list 2>/dev/null | grep -E "platforms;android-3[5-9]|build-tools;3[5-9]" | sort -u | head -n 20
+          "$SDKMANAGER" "platforms;android-${ANDROID_API}"
 
-      - name: Raise targetSdkVersion to 23
-        # Android 14+ refuses to install apps targeting SDK < 23; the
-        # Godot 1.1 template targets SDK 10.
+      - name: Configure Godot editor settings
         run: |
-          curl -fsSL -o apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar
-          java -jar apktool.jar d -s -f -o apk-src out/crystalmett-unsigned.apk
-          python3 - <<'PY'
-          import re
-          p = "apk-src/apktool.yml"
-          s = open(p).read()
-          if "targetSdkVersion" in s:
-              s = re.sub(r"targetSdkVersion: .*", "targetSdkVersion: '23'", s)
-          else:
-              s = re.sub(r"(\n(\s*)minSdkVersion: .*)", r"\1\n\2targetSdkVersion: '23'", s)
-          open(p, "w").write(s)
-          print(s)
-          PY
-          java -jar apktool.jar b -o out/crystalmett-unsigned.apk apk-src
+          "$GODOT" --headless --quit || true
+          for f in ~/.config/godot/editor_settings-*.tres; do
+            echo "export/android/android_sdk_path = \"$ANDROID_HOME\"" >> "$f"
+            echo "export/android/java_sdk_path = \"$JAVA_HOME\"" >> "$f"
+            echo "configured $f"
+          done
 
-      - name: Align and sign APK
+      - name: Import project
+        run: timeout 600 "$GODOT" --headless --import 2>&1 | tee import.log
+
+      - name: Smoke test (run the game with 4 simulated touch players)
+        run: |
+          timeout 300 "$GODOT" --headless --fixed-fps 60 --quit-after 3600 -- --smoke-test 2>&1 | tee smoke.log
+          if grep -E "SCRIPT ERROR|Parse Error|ERROR:" smoke.log; then
+            echo "::error::The game logged errors during the smoke test"
+            exit 1
+          fi
+          grep "has joined the game" smoke.log
+
+      - name: Install Android build template
+        run: |
+          "$GODOT" --headless --install-android-build-template --quit 2>&1 | tail -n 5
+          ls android/build
+          # Godot's template may compile against an older SDK than the target.
+          grep -nE "compileSdk|targetSdk|minSdk|buildTools" android/build/config.gradle || true
+          sed -i -E "s/(compileSdk *: *)[0-9]+/\1${ANDROID_API}/" android/build/config.gradle
+          grep -nE "compileSdk" android/build/config.gradle
+
+      - name: Prepare signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_USER: ${{ secrets.ANDROID_KEYSTORE_USER }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          KS="$RUNNER_TEMP/release.keystore"
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$KS"
+          else
+            echo "::warning::No ANDROID_KEYSTORE_BASE64 secret, signing with a throwaway key"
+            KEYSTORE_USER=crystalmett
+            KEYSTORE_PASSWORD=crystalmett
+            keytool -genkeypair -noprompt -keystore "$KS" -storepass "$KEYSTORE_PASSWORD" -keypass "$KEYSTORE_PASSWORD" \
+              -alias "$KEYSTORE_USER" -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=CrystalMett, O=CrystalMett, C=DE"
+          fi
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=$KS" >> "$GITHUB_ENV"
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=$KEYSTORE_USER" >> "$GITHUB_ENV"
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Export APK
+        run: |
+          mkdir -p build
+          timeout 1200 "$GODOT" --headless --export-release "Android" build/crystalmett.apk 2>&1 | tee export.log
+          test -s build/crystalmett.apk
+
+      - name: Verify APK
         run: |
           BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n1)
-          keytool -genkeypair -noprompt -keystore release.keystore -storepass android -keypass android \
-            -alias crystalmett -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=CrystalMett, O=CrystalMett, C=DE"
-          "$BT/zipalign" -f -p 4 out/crystalmett-unsigned.apk out/crystalmett-aligned.apk
-          "$BT/apksigner" sign --ks release.keystore --ks-pass pass:android --ks-key-alias crystalmett \
-            --out out/crystalmett.apk out/crystalmett-aligned.apk
-          "$BT/apksigner" verify --verbose out/crystalmett.apk
-          "$BT/aapt" dump badging out/crystalmett.apk | grep -iE "^package|sdkVersion|native-code|application-label:" || true
+          "$BT/apksigner" verify --print-certs build/crystalmett.apk
+          "$BT/aapt" dump badging build/crystalmett.apk | grep -E "^package|sdkVersion|native-code|application-label:"
+          "$BT/aapt" dump badging build/crystalmett.apk | grep -q "targetSdkVersion:'${ANDROID_API}'"
 
       - uses: actions/upload-artifact@v4
         with:
           name: crystalmett-apk
-          path: out/crystalmett.apk
+          path: build/crystalmett.apk
