@@ -1,0 +1,82 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://gfx/rift.png" type="Texture" id=1]
+
+[node name="Rift" type="Sprite"]
+
+transform/pos = Vector2( -253.72, 0.507446 )
+texture = ExtResource( 1 )
+offset = Vector2( 253.72, -0.507446 )
+__meta__ = {
+"__editor_plugin_screen__": "Script",
+"__editor_plugin_states__": {
+"2D": {
+"ofs": Vector2( -102.183, -205.947 ),
+"snap_grid": false,
+"snap_offset": Vector2( 0, 0 ),
+"snap_pixel": false,
+"snap_relative": false,
+"snap_rotation": false,
+"snap_rotation_offset": 0.0,
+"snap_rotation_step": 0.261799,
+"snap_show_grid": false,
+"snap_step": Vector2( 10, 10 ),
+"zoom": 0.54036
+},
+"3D": {
+"ambient_light_color": Color( 0.15, 0.15, 0.15, 1 ),
+"default_light": true,
+"default_srgb": false,
+"deflight_rot_x": 0.942478,
+"deflight_rot_y": 0.628319,
+"fov": 45.0,
+"show_grid": true,
+"show_origin": true,
+"viewport_mode": 1,
+"viewports": [ {
+"distance": 4.0,
+"listener": true,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+} ],
+"zfar": 500.0,
+"znear": 0.1
+},
+"Anim": {
+"visible": false
+}
+},
+"__editor_run_settings__": {
+"custom_args": "-l $scene",
+"run_mode": 0
+}
+}
+
+

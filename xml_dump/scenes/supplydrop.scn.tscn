@@ -1,0 +1,241 @@
+[gd_scene load_steps=8 format=1]
+
+[ext_resource path="res://scripts/supplydrop.gd" type="Script" id=1]
+[ext_resource path="res://gfx/Parachute.png" type="Texture" id=2]
+[ext_resource path="res://gfx/Box.png" type="Texture" id=3]
+[ext_resource path="res://gfx/shadow.png" type="Texture" id=4]
+
+[sub_resource type="CircleShape2D" id=4]
+
+custom_solver_bias = 0.0
+radius = 20.0
+
+[sub_resource type="Animation" id=3]
+
+length = 1.0
+loop = true
+step = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Box:transform/pos")
+tracks/0/interp = 1
+tracks/0/imported = false
+tracks/0/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 10, 94 ), Vector2( -5, 94 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Box:transform/rot")
+tracks/1/interp = 1
+tracks/1/imported = false
+tracks/1/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ 5.0, -5.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Parachute:transform/pos")
+tracks/2/interp = 1
+tracks/2/imported = false
+tracks/2/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, 0 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Parachute:transform/rot")
+tracks/3/interp = 1
+tracks/3/imported = false
+tracks/3/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ 5.0, -5.0 ]
+}
+
+[sub_resource type="Animation" id=2]
+
+length = 1.0
+loop = false
+step = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Parachute:transform/pos")
+tracks/0/interp = 1
+tracks/0/imported = false
+tracks/0/keys = {
+"times": FloatArray( 0, 1 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, 42 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Parachute:visibility/opacity")
+tracks/1/interp = 1
+tracks/1/imported = false
+tracks/1/keys = {
+"times": FloatArray( 0, 1 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ 1.0, 0.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Shadow:visibility/opacity")
+tracks/2/interp = 1
+tracks/2/imported = false
+tracks/2/keys = {
+"times": FloatArray( 0, 1 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.3 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Box:transform/pos")
+tracks/3/interp = 1
+tracks/3/imported = false
+tracks/3/keys = {
+"times": FloatArray( 0, 1 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 3.00278, 94 ), Vector2( 3.00278, 126 ) ]
+}
+
+[node name="Supplydrop" type="RigidBody2D"]
+
+input/pickable = false
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 2.20529, 129.376 )
+shapes/0/trigger = true
+collision/layers = 1
+collision/mask = 1
+mode = 2
+mass = 10.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 0.0
+custom_integrator = false
+continuous_cd = 0
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+velocity/linear = Vector2( 0, 0 )
+velocity/angular = 0.0
+damp_override/linear = 1.0
+damp_override/angular = 1.0
+script/script = ExtResource( 1 )
+__meta__ = {
+"__editor_plugin_screen__": "Script",
+"__editor_plugin_states__": {
+"2D": {
+"ofs": Vector2( -347.723, -144.359 ),
+"snap_grid": false,
+"snap_offset": Vector2( 0, 0 ),
+"snap_pixel": false,
+"snap_relative": false,
+"snap_rotation": false,
+"snap_rotation_offset": 0.0,
+"snap_rotation_step": 0.261799,
+"snap_show_grid": false,
+"snap_step": Vector2( 10, 10 ),
+"zoom": 1.36037
+},
+"3D": {
+"ambient_light_color": Color( 0.15, 0.15, 0.15, 1 ),
+"default_light": true,
+"default_srgb": false,
+"deflight_rot_x": 0.942478,
+"deflight_rot_y": 0.628319,
+"fov": 45.0,
+"show_grid": true,
+"show_origin": true,
+"viewport_mode": 1,
+"viewports": [ {
+"distance": 4.0,
+"listener": true,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+} ],
+"zfar": 500.0,
+"znear": 0.1
+},
+"Anim": {
+"animation": "land",
+"editing": true,
+"player": NodePath("AnimationPlayer"),
+"visible": true
+}
+},
+"__editor_run_settings__": {
+"custom_args": "-l $scene",
+"run_mode": 0
+}
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+playback/process_mode = 1
+playback/default_blend_time = 0.0
+root/root = NodePath("..")
+anims/fly = SubResource( 3 )
+anims/land = SubResource( 2 )
+playback/active = true
+playback/speed = 1.0
+blend_times = [  ]
+autoplay = ""
+
+[node name="Parachute" type="Sprite" parent="."]
+
+z/z = 3
+texture = ExtResource( 2 )
+offset = Vector2( -0.157684, 40.4298 )
+
+[node name="Box" type="Sprite" parent="."]
+
+transform/pos = Vector2( 3.00278, 94 )
+z/z = 2
+texture = ExtResource( 3 )
+
+[node name="Shadow" type="Sprite" parent="."]
+
+visibility/opacity = 0.0
+transform/pos = Vector2( 3, 139 )
+texture = ExtResource( 4 )
+
+[node name="BoxCollision" type="CollisionShape2D" parent="."]
+
+transform/pos = Vector2( 2.20529, 129.376 )
+shape = SubResource( 4 )
+trigger = true
+_update_shape_index = 0
+
+

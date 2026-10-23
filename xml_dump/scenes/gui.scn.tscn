@@ -1,0 +1,154 @@
+[gd_scene load_steps=6 format=1]
+
+[ext_resource path="res://scripts/gui.gd" type="Script" id=1]
+[ext_resource path="res://scenes/score.scn" type="PackedScene" id=2]
+[ext_resource path="res://scripts/menu_pause.gd" type="Script" id=3]
+[ext_resource path="res://fnts/Slackey.fnt" type="BitmapFont" id=4]
+[ext_resource path="res://scripts/gui_victory.gd" type="Script" id=5]
+
+[node name="GUI" type="Node2D"]
+
+process/pause_mode = 2
+z/z = 4090
+script/script = ExtResource( 1 )
+__meta__ = {
+"__editor_plugin_screen__": "Script"
+}
+
+[node name="Score_UL" parent="." instance=ExtResource( 2 )]
+
+[node name="Score_UR" parent="." instance=ExtResource( 2 )]
+
+transform/pos = Vector2( 1839, 0 )
+
+[node name="Score_LL" parent="." instance=ExtResource( 2 )]
+
+transform/pos = Vector2( 0, 1015 )
+
+[node name="Score_LR" parent="." instance=ExtResource( 2 )]
+
+transform/pos = Vector2( 1839, 1015 )
+
+[node name="Menu_Pause" type="Node2D" parent="."]
+
+visibility/visible = false
+script/script = ExtResource( 3 )
+__meta__ = {
+"_editor_collapsed": true
+}
+
+[node name="L_Pause" type="Label" parent="Menu_Pause"]
+
+margin/left = 12.0
+margin/top = 3.0
+margin/right = 1912.0
+margin/bottom = 1079.0
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+custom_fonts/font = ExtResource( 4 )
+text = "PAUSED"
+align = 1
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="L_Pause1" type="Label" parent="Menu_Pause"]
+
+margin/left = 10.0
+margin/top = 552.0
+margin/right = 1910.0
+margin/bottom = 644.0
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+custom_fonts/font = ExtResource( 4 )
+text = "PRESS ESC TO CONTINUE"
+align = 1
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Button" type="Button" parent="Menu_Pause"]
+
+anchor/right = 1
+margin/left = 803.0
+margin/top = 674.0
+margin/right = -1058.0
+margin/bottom = 808.0
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+custom_fonts/font = ExtResource( 4 )
+toggle_mode = false
+text = "RESTART GAME"
+flat = false
+
+[node name="Menu_Victory" type="Node2D" parent="."]
+
+visibility/visible = false
+script/script = ExtResource( 5 )
+__meta__ = {
+"_editor_collapsed": true
+}
+
+[node name="L_Victory" type="Label" parent="Menu_Victory"]
+
+margin/right = 1910.0
+margin/bottom = 1069.0
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+custom_fonts/font = ExtResource( 4 )
+text = "TEAM ? WINS!"
+align = 1
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Button1" type="Button" parent="Menu_Victory"]
+
+anchor/right = 1
+margin/left = 803.0
+margin/top = 674.0
+margin/right = -1058.0
+margin/bottom = 808.0
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+custom_fonts/font = ExtResource( 4 )
+toggle_mode = false
+text = "NEW GAME"
+flat = false
+
+[node name="Menu_Join_Game" type="Node2D" parent="."]
+
+[node name="Countdown" type="Label" parent="Menu_Join_Game"]
+
+margin/left = 6.0
+margin/top = 493.0
+margin/right = 1919.0
+margin/bottom = 631.0
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+custom_fonts/font = ExtResource( 4 )
+text = "PRESS BLUE TO JOIN"
+align = 1
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[connection signal="released" from="Menu_Pause/Button" to="Menu_Pause" method="_on_Button_released"]
+
+[connection signal="pressed" from="Menu_Pause/Button" to="Menu_Pause" method="_on_Button_pressed"]
+
+[connection signal="pressed" from="Menu_Victory/Button1" to="Menu_Victory" method="_on_Button1_pressed"]
+
+

@@ -1,0 +1,314 @@
+[gd_scene load_steps=8 format=1]
+
+[ext_resource path="res://scripts/pig.gd" type="Script" id=1]
+[ext_resource path="res://gfx/pig.png" type="Texture" id=2]
+[ext_resource path="res://gfx/shadow.png" type="Texture" id=3]
+
+[sub_resource type="ConvexPolygonShape2D" id=1]
+
+custom_solver_bias = 0.0
+points = Vector2Array( 12.7163, 8.61489, 0.251709, 15.715, -11.8973, 8.93045, 0.409489, 0.725933 )
+
+[sub_resource type="Animation" id=2]
+
+resource/name = "idle"
+length = 2.0
+loop = true
+step = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:transform/pos")
+tracks/0/interp = 1
+tracks/0/imported = false
+tracks/0/keys = {
+"times": FloatArray( 0, 1 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, -0.8846 ), Vector2( -2, -0.8846 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:transform/scale")
+tracks/1/interp = 1
+tracks/1/imported = false
+tracks/1/keys = {
+"times": FloatArray( 0, 1 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0.25, 0.258846 ), Vector2( 0.27, 0.258846 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite 2:transform/pos")
+tracks/2/interp = 1
+tracks/2/imported = false
+tracks/2/keys = {
+"times": FloatArray( 0, 1 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 5.72205e-06, 8.3623 ), Vector2( -1.99999, 8.3623 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite 2:transform/scale")
+tracks/3/interp = 1
+tracks/3/imported = false
+tracks/3/keys = {
+"times": FloatArray( 0, 1 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0.5, 0.5 ), Vector2( 0.55, 0.5 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+
+resource/name = "walk"
+length = 1.0
+loop = true
+step = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:transform/pos")
+tracks/0/interp = 1
+tracks/0/imported = false
+tracks/0/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, -5 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:transform/rot")
+tracks/1/interp = 1
+tracks/1/imported = false
+tracks/1/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite:transform/scale")
+tracks/2/interp = 1
+tracks/2/imported = false
+tracks/2/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0.25, 0.25 ), Vector2( 0.22, 0.3 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite 2:transform/pos")
+tracks/3/interp = 1
+tracks/3/imported = false
+tracks/3/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( -0.900753, 8.3623 ), Vector2( -0.900753, 8.3623 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Sprite 2:transform/scale")
+tracks/4/interp = 1
+tracks/4/imported = false
+tracks/4/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0.522519, 0.5 ), Vector2( 0.4, 0.4 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+
+resource/name = "spawn"
+length = 2.0
+loop = false
+step = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:transform/pos")
+tracks/0/interp = 1
+tracks/0/imported = false
+tracks/0/keys = {
+"times": FloatArray( 0, 0.5, 1, 1.5, 2 ),
+"transitions": FloatArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 20.5601 ), Vector2( 0, -42.4399 ), Vector2( 0, 6 ), Vector2( 0, -13 ), Vector2( -1, -0.999997 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:transform/scale")
+tracks/1/interp = 1
+tracks/1/imported = false
+tracks/1/keys = {
+"times": FloatArray( 0, 0.5, 1, 1.5, 2 ),
+"transitions": FloatArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0.241361, 0.264399 ), Vector2( 0.15, 0.4 ), Vector2( 0.4, 0.15 ), Vector2( 0.26, 0.26 ), Vector2( 0.26, 0.26 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite:visibility/opacity")
+tracks/2/interp = 1
+tracks/2/imported = false
+tracks/2/keys = {
+"times": FloatArray( 0, 0.5 ),
+"transitions": FloatArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite 2:transform/pos")
+tracks/3/interp = 1
+tracks/3/imported = false
+tracks/3/keys = {
+"times": FloatArray( 0, 0.5, 1 ),
+"transitions": FloatArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( -0.900753, 8.3623 ), Vector2( -0.900753, 8.3623 ), Vector2( -0.900753, 8.3623 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Sprite 2:transform/scale")
+tracks/4/interp = 1
+tracks/4/imported = false
+tracks/4/keys = {
+"times": FloatArray( 0, 0.5, 1, 1.5, 2 ),
+"transitions": FloatArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0.8, 0.8 ), Vector2( 0.6, 0.6 ), Vector2( 0.8, 0.8 ), Vector2( 0.4, 0.4 ), Vector2( 0.5, 0.5 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Sprite 2:visibility/opacity")
+tracks/5/interp = 1
+tracks/5/imported = false
+tracks/5/keys = {
+"times": FloatArray( 0, 0.5, 1, 1.5, 2 ),
+"transitions": FloatArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.1, 0.5, 0.4, 0.3 ]
+}
+
+[node name="Pig" type="RigidBody2D"]
+
+input/pickable = false
+shapes/0/shape = SubResource( 1 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+mode = 2
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 1.0
+custom_integrator = false
+continuous_cd = 0
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+velocity/linear = Vector2( 0, 0 )
+velocity/angular = 0.0
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+script/script = ExtResource( 1 )
+__meta__ = {
+"__editor_plugin_screen__": "2D",
+"__editor_plugin_states__": {
+"2D": {
+"ofs": Vector2( -185.336, -137.041 ),
+"snap_grid": false,
+"snap_offset": Vector2( 0, 0 ),
+"snap_pixel": false,
+"snap_relative": false,
+"snap_rotation": false,
+"snap_rotation_offset": 0.0,
+"snap_rotation_step": 0.261799,
+"snap_show_grid": false,
+"snap_step": Vector2( 10, 10 ),
+"zoom": 2.78951
+},
+"3D": {
+"ambient_light_color": Color( 0.15, 0.15, 0.15, 1 ),
+"default_light": true,
+"default_srgb": false,
+"deflight_rot_x": 0.942478,
+"deflight_rot_y": 0.628319,
+"fov": 45.0,
+"show_grid": true,
+"show_origin": true,
+"viewport_mode": 1,
+"viewports": [ {
+"distance": 4.0,
+"listener": true,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+}, {
+"distance": 4.0,
+"listener": false,
+"pos": Vector3( 0, 0, 0 ),
+"use_environment": false,
+"use_orthogonal": false,
+"x_rot": 0.0,
+"y_rot": 0.0
+} ],
+"zfar": 500.0,
+"znear": 0.1
+},
+"Anim": {
+"visible": false
+}
+},
+"__editor_run_settings__": {
+"custom_args": "-l $scene",
+"run_mode": 0
+}
+}
+
+[node name="Sprite" type="Sprite" parent="."]
+
+transform/pos = Vector2( -0.641516, -1.35848 )
+transform/scale = Vector2( 0.26, 0.26 )
+z/z = 1
+texture = ExtResource( 2 )
+hframes = 8
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+
+build_mode = 0
+polygon = Vector2Array( -11.8973, 8.93045, 0.251709, 15.715, 12.7163, 8.61489, 0.409489, 0.725933 )
+shape_range = Vector2( 0, 0 )
+trigger = false
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+playback/process_mode = 1
+playback/default_blend_time = 0.0
+root/root = NodePath("..")
+anims/idle = SubResource( 2 )
+anims/walk = SubResource( 3 )
+anims/spawn = SubResource( 4 )
+playback/active = true
+playback/speed = 2.0
+blend_times = [  ]
+autoplay = ""
+
+[node name="Sprite 2" type="Sprite" parent="."]
+
+visibility/opacity = 0.3
+transform/pos = Vector2( -0.900753, 8.3623 )
+transform/scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 3 )
+
+
